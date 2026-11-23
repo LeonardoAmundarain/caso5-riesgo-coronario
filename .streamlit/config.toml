@@ -1,0 +1,7 @@
+[theme]
+base = "light"
+primaryColor = "#F2A900"          # amarillo Duoc
+backgroundColor = "#F6F7FB"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#0B2545"             # azul marino Duoc
+font = "sans serif"

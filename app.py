@@ -53,11 +53,60 @@ cohorte = obtener_cohorte()
 UMBRAL = paquete["umbral"]
 
 # --------------------------------------------------------------------------- #
+# Estilo
+# --------------------------------------------------------------------------- #
+NAVY, AMARILLO = "#0B2545", "#F2A900"
+st.markdown(f"""
+<style>
+.block-container {{max-width: 1150px; padding-top: 1.5rem;}}
+div[data-baseweb="tab-list"], div[role="tablist"] {{justify-content: center !important; gap: 1.5rem;}}
+[data-baseweb="tab-highlight"] {{background-color: {AMARILLO};}}
+button[data-baseweb="tab"] p {{font-size: 1.02rem; font-weight: 600;}}
+.encabezado {{text-align: center; margin-bottom: .4rem;}}
+.encabezado img {{height: 58px; margin-bottom: .6rem;}}
+.encabezado h1 {{color: {NAVY}; font-size: 2.5rem; margin: 0; padding: 0;}}
+.encabezado .linea {{width: 90px; height: 4px; background: {AMARILLO}; margin: .6rem auto .7rem; border-radius: 2px;}}
+.encabezado p {{color: #5b6474; font-size: .92rem; margin: 0;}}
+.figura {{display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding-top: 2.2rem;}}
+.figura .rotulo {{margin-top:.6rem; font-weight:600; letter-spacing:.04em; text-transform: uppercase; font-size:.85rem;}}
+.tarjeta-resultado {{border-radius: 14px; padding: 1.3rem 1.6rem; color: white; margin-bottom: 1rem;}}
+.tarjeta-resultado .grande {{font-size: 3rem; font-weight: 800; line-height: 1;}}
+.tarjeta-resultado .sub {{opacity: .9; font-size: .95rem;}}
+.tarjeta-resultado .decision {{font-size: 1.25rem; font-weight: 700; margin-top: .3rem;}}
+div[data-testid="stButton"] button[kind="primary"] {{background:{NAVY}; border-color:{NAVY}; height: 3rem; font-size: 1.05rem;}}
+div[data-testid="stButton"] button[kind="primary"]:hover {{background:{AMARILLO}; border-color:{AMARILLO}; color:{NAVY};}}
+</style>
+""", unsafe_allow_html=True)
+
+
+def logo_b64():
+    import base64
+    ruta = C.RAIZ / "assets" / "logo_duoc.png"
+    return base64.b64encode(ruta.read_bytes()).decode() if ruta.exists() else None
+
+
+def silueta(sexo: str) -> str:
+    """Pictograma propio (SVG) de hombre o mujer."""
+    if sexo == "Hombre":
+        color, cuerpo = "#1F6FB2", '<rect x="38" y="62" width="44" height="78" rx="14"/><rect x="40" y="128" width="16" height="72" rx="8"/><rect x="64" y="128" width="16" height="72" rx="8"/><rect x="18" y="66" width="14" height="66" rx="7"/><rect x="88" y="66" width="14" height="66" rx="7"/>'
+    else:
+        color, cuerpo = "#E0608C", '<path d="M44 62 h32 q8 0 10 8 l14 66 h-80 l14 -66 q2 -8 10 -8z"/><rect x="44" y="132" width="14" height="68" rx="7"/><rect x="62" y="132" width="14" height="68" rx="7"/><rect x="20" y="66" width="13" height="58" rx="6.5" transform="rotate(8 26 66)"/><rect x="87" y="66" width="13" height="58" rx="6.5" transform="rotate(-8 93 66)"/>'
+    return (f'<div class="figura"><svg viewBox="0 0 120 205" width="150" fill="{color}" xmlns="http://www.w3.org/2000/svg">'
+            f'<circle cx="60" cy="28" r="22"/>{cuerpo}</svg>'
+            f'<div class="rotulo" style="color:{color}">{sexo}</div></div>')
+
+
+# --------------------------------------------------------------------------- #
 # Encabezado
 # --------------------------------------------------------------------------- #
-st.title("🫀 Riesgo coronario a 10 años")
-st.caption("Caso 5 · Gestión de Proyectos de Datos (SCY1102) · Regresión logística entrenada con la "
-           "cohorte de Framingham. Prototipo académico: no reemplaza una evaluación clínica.")
+b64 = logo_b64()
+st.markdown(
+    '<div class="encabezado">'
+    + (f'<img src="data:image/png;base64,{b64}" alt="Duoc UC">' if b64 else "")
+    + "<h1>🫀 Riesgo coronario a 10 años</h1><div class='linea'></div>"
+    "<p>Caso 5 · Gestión de Proyectos de Datos (SCY1102) · Regresión logística entrenada con la cohorte de Framingham</p>"
+    "<p><i>Prototipo académico: no reemplaza una evaluación clínica.</i></p></div>",
+    unsafe_allow_html=True)
 
 tab_form, tab_dash, tab_ens = st.tabs(["Evaluar a una persona", "Resultados del modelo", "Contraste con Chile (ENS)"])
 
@@ -65,10 +114,9 @@ tab_form, tab_dash, tab_ens = st.tabs(["Evaluar a una persona", "Resultados del 
 # 1. Formulario
 # --------------------------------------------------------------------------- #
 with tab_form:
-    col_f, col_r = st.columns([1.1, 1], gap="large")
-
-    with col_f:
-        with st.form("persona"):
+    with st.container(border=True):
+        col_img, col_f = st.columns([1, 2.6], gap="large")
+        with col_f:
             st.subheader("Datos del control preventivo")
             a, b = st.columns(2)
             sexo = a.radio("Sexo", ["Hombre", "Mujer"], horizontal=True)
@@ -88,59 +136,58 @@ with tab_form:
 
             a, b = st.columns(2)
             fuma = a.toggle("Fumador actual")
-            cig = b.number_input("Cigarrillos al día", *C.RANGOS["CIGPDAY"][:3], step=1)
+            cig = b.number_input("Cigarrillos al día", *C.RANGOS["CIGPDAY"][:3], step=1, disabled=not fuma)
 
             a, b = st.columns(2)
             diab = a.toggle("Diabetes")
             hta = b.toggle("Usa antihipertensivos")
+        with col_img:
+            st.markdown(silueta(sexo), unsafe_allow_html=True)
 
-            enviado = st.form_submit_button("Calcular riesgo", type="primary", use_container_width=True)
+    _, centro, _ = st.columns([1, 1.4, 1])
+    if centro.button("Calcular riesgo", type="primary", use_container_width=True):
+        st.session_state["calcular"] = True
 
     datos = {"AGE": edad, "SEX": 1 if sexo == "Hombre" else 2, "SYSBP": sys_, "DIABP": dia,
              "TOTCHOL": col, "GLUCOSE": glu, "BMI": imc, "HEARTRTE": fc,
              "CURSMOKE": int(fuma), "CIGPDAY": cig if fuma else 0,
              "DIABETES": int(diab), "BPMEDS": int(hta)}
 
-    with col_r:
-        st.subheader("Resultado")
-        errores = P.validar_persona({**datos, "CIGPDAY": cig})
-        if fuma is False and cig > 0:
-            st.info("Marcó 0 en fumador: los cigarrillos al día no se consideran.")
-            errores = [e for e in errores if "cigarrillos" not in e]
-        if errores:
-            for e in errores:
-                st.error(e)
-        elif not enviado and "ya_calculo" not in st.session_state:
-            st.write("Complete el formulario y presione **Calcular riesgo**.")
-        else:
-            st.session_state["ya_calculo"] = True
-            riesgo, derivar = P.predecir(paquete, datos)
+    errores = P.validar_persona(datos)
+    if errores:
+        for e in errores:
+            st.error(e)
+    elif st.session_state.get("calcular"):
+        riesgo, derivar = P.predecir(paquete, datos)
+        st.markdown("### Resultado")
 
-            m1, m2 = st.columns(2)
-            m1.metric("Riesgo estimado a 10 años", pct(riesgo))
-            m2.metric("Umbral de derivación", pct(UMBRAL))
-            if derivar:
-                st.error(f"**Derivar a evaluación cardiovascular.** El riesgo supera el umbral de {pct(UMBRAL)}.")
-            else:
-                st.success(f"**Sin indicación de derivación.** El riesgo está bajo el umbral de {pct(UMBRAL)}.")
+        fondo = "linear-gradient(135deg,#B42318,#E5484D)" if derivar else "linear-gradient(135deg,#0B2545,#1F6FB2)"
+        decision = ("Derivar a evaluación cardiovascular" if derivar else "Sin indicación de derivación")
+        r1, r2 = st.columns([1.15, 1], gap="large")
+        with r1:
+            st.markdown(
+                f'<div class="tarjeta-resultado" style="background:{fondo}">'
+                f'<div class="sub">Riesgo estimado de un evento coronario en 10 años</div>'
+                f'<div class="grande">{pct(riesgo)}</div>'
+                f'<div class="decision">{decision}</div>'
+                f'<div class="sub">Umbral de derivación: {pct(UMBRAL)}</div></div>',
+                unsafe_allow_html=True)
 
-            # Barra de riesgo vs umbral
             tope = max(0.5, riesgo * 1.15)
-            barra = pd.DataFrame({"x": [0], "x2": [riesgo]})
-            g = (alt.Chart(pd.DataFrame({"x": [0], "x2": [tope]})).mark_bar(color="#e2e8f0", height=26)
+            g = (alt.Chart(pd.DataFrame({"x": [0], "x2": [tope]})).mark_bar(color="#E3E7EF", height=26, cornerRadius=6)
                  .encode(x=alt.X("x:Q", scale=alt.Scale(domain=[0, tope]), axis=alt.Axis(format="%", title=None)), x2="x2")
-                 + alt.Chart(barra).mark_bar(color=ROJO if derivar else AZUL, height=26).encode(x="x:Q", x2="x2")
-                 + alt.Chart(pd.DataFrame({"u": [UMBRAL]})).mark_rule(color="black", size=3, y=-6, y2=34).encode(x="u:Q"))
+                 + alt.Chart(pd.DataFrame({"x": [0], "x2": [riesgo]})).mark_bar(color=ROJO if derivar else AZUL, height=26, cornerRadius=6)
+                 .encode(x="x:Q", x2="x2")
+                 + alt.Chart(pd.DataFrame({"u": [UMBRAL]})).mark_rule(color=NAVY, size=3, y=-6, y2=34).encode(x="u:Q"))
             st.altair_chart(g.properties(height=70), use_container_width=True)
-            st.caption("La línea negra marca el umbral de derivación.")
+            st.caption("La línea oscura marca el umbral de derivación.")
 
-            # Referencia: riesgo observado en personas parecidas de la cohorte
             par = cohorte[(cohorte["SEX"] == datos["SEX"]) & cohorte["AGE"].between(edad - 5, edad + 5)]
             if len(par) >= 30:
-                st.caption(f"En la cohorte, {pct(par[C.OBJETIVO].mean())} de las personas del mismo sexo y "
-                           f"{edad - 5}–{edad + 5} años tuvo un evento coronario en 10 años (n = {len(par)}).")
+                st.info(f"En la cohorte, **{pct(par[C.OBJETIVO].mean())}** de las personas del mismo sexo y "
+                        f"{edad - 5}–{edad + 5} años tuvo un evento coronario en 10 años (n = {len(par)}).")
 
-            # Qué factores empujan el riesgo (contribución al logit respecto de la persona promedio)
+        with r2:
             pre = paquete["pipeline"].named_steps["pre"]
             lr = paquete["pipeline"].named_steps["modelo"]
             x = pre.transform(pd.DataFrame([datos])[paquete["variables"]])[0]
@@ -148,14 +195,19 @@ with tab_form:
             aporte = pd.DataFrame({"Factor": [C.ETIQUETAS[v] for v in paquete["variables"]],
                                    "Aporte": lr.coef_[0] * (x - x_ref)})
             aporte = aporte[aporte["Aporte"].abs() > 0.05].sort_values("Aporte", ascending=False)
+            st.markdown("**Qué lo sube y qué lo baja**  \nfrente a la persona promedio de la cohorte")
             if len(aporte):
-                st.markdown("**Qué lo sube y qué lo baja** (frente a la persona promedio de la cohorte)")
-                ch = (alt.Chart(aporte).mark_bar().encode(
+                ch = (alt.Chart(aporte).mark_bar(cornerRadiusEnd=4).encode(
                     x=alt.X("Aporte:Q", title="Efecto sobre el riesgo (escala logit)"),
                     y=alt.Y("Factor:N", sort="-x", title=None),
                     color=alt.condition("datum.Aporte > 0", alt.value(ROJO), alt.value(AZUL)),
                     tooltip=["Factor", alt.Tooltip("Aporte:Q", format=".2f")]))
                 st.altair_chart(ch.properties(height=28 * len(aporte) + 30), use_container_width=True)
+            else:
+                st.write("Todos los factores están cerca del promedio de la cohorte.")
+    else:
+        st.markdown("<p style='text-align:center;color:#5b6474'>Complete los datos y presione <b>Calcular riesgo</b>.</p>",
+                    unsafe_allow_html=True)
 
 # --------------------------------------------------------------------------- #
 # 2. Dashboard de resultados
