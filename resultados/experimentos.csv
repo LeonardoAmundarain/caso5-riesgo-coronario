@@ -1,0 +1,8 @@
+Versión,Modelo,Configuración,ROC-AUC,PR-AUC,Recall,Precisión,F1,Brier,Fecha
+v1,Regresión logística,class_weight=balanced,0.73,0.223,0.673,0.161,0.26,0.209,2026-11-14
+v1,Random forest,"300 árboles, por defecto",0.682,0.184,0.007,0.133,0.013,0.079,2026-11-14
+v1,XGBoost,por defecto,0.629,0.146,0.083,0.147,0.105,0.099,2026-11-14
+v2,Regresión logística,C=10,0.73,0.222,0.67,0.161,0.259,0.209,2026-11-14
+v2,Random forest,"max_depth=6, min_samples_leaf=40",0.721,0.222,0.548,0.174,0.263,0.177,2026-11-14
+v2,XGBoost,"learning_rate=0.03, max_depth=2, n_estimators=100",0.728,0.228,0.664,0.157,0.254,0.202,2026-11-14
+v3,Regresión logística,"C=10, sin pesos (umbral 0,5)",0.729,0.222,0.003,0.2,0.007,0.077,2026-11-14
