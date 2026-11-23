@@ -14,7 +14,9 @@ de antihipertensivos), e indica si conviene derivar a evaluación cardiovascular
 | Prueba (845 personas) | ROC-AUC 0,76 · Recall 0,74 · Precisión 0,17 · Brier 0,076 |
 | Contraste | ENS 2016-2017 ponderada: riesgo medio estimado 6,6 % en Chile |
 
-> Prototipo académico. 
+**▶ Prototipo en línea:** https://caso5-riesgo-coronario.streamlit.app
+
+> Prototipo académico. No reemplaza una evaluación clínica.
 
 ## Estructura
 
@@ -40,6 +42,8 @@ caso5-riesgo-coronario/
 │   └── experimentos.csv         # registro de la Parte 2
 ├── tests/test_pipeline.py       # 8 pruebas, incluida la reproducción de la Parte 2
 ├── app.py                       # prototipo en Streamlit
+├── assets/logo_duoc.png         # logo del encabezado
+├── .streamlit/config.toml       # colores de la app
 ├── docs/capturas/               # pantallas del prototipo
 └── requirements.txt
 ```
@@ -52,12 +56,20 @@ caso5-riesgo-coronario/
 | 2. Modelo | Regresión logística, random forest y XGBoost; métricas y registro de experimentos | `notebooks/Parte2…`, `resultados/experimentos.csv` |
 | 3. Entregable | Pipeline reproducible, prototipo en Streamlit, pruebas y este repositorio | `src/`, `app.py`, `tests/` |
 
-Los notebooks corren en Google Colab montando la carpeta del proyecto en Drive, o en local desde la raíz
-del repositorio (leen `datos/` y escriben en `resultados/`).
+Abrir los notebooks directamente en Colab:
+[Parte 1a](https://colab.research.google.com/github/LeonardoAmundarain/caso5-riesgo-coronario/blob/main/notebooks/Parte1a_Limpieza_heart_Caso5.ipynb) ·
+[Parte 1b](https://colab.research.google.com/github/LeonardoAmundarain/caso5-riesgo-coronario/blob/main/notebooks/Parte1b_Preparacion_Framingham_ENS_Caso5.ipynb) ·
+[Parte 2](https://colab.research.google.com/github/LeonardoAmundarain/caso5-riesgo-coronario/blob/main/notebooks/Parte2_Modelo_Caso5.ipynb)
+
+La primera celda de cada notebook busca sola la carpeta de trabajo: usa la carpeta compartida del equipo
+en Drive si existe; si no, clona este repositorio en Colab; y en un computador usa la raíz del repositorio
+aunque el notebook se abra desde `notebooks/`.
 
 ## Cómo ejecutarlo
 
 ```bash
+git clone https://github.com/LeonardoAmundarain/caso5-riesgo-coronario.git
+cd caso5-riesgo-coronario
 pip install -r requirements.txt
 
 # 1. Entrenar y guardar el modelo (≈ 2 segundos)
@@ -66,7 +78,7 @@ python -m src.pipeline
 # 2. Comprobar que todo funciona
 python -m pytest -q
 
-# 3. Abrir el prototipo
+# 3. Abrir el prototipo en http://localhost:8501
 streamlit run app.py
 ```
 
@@ -80,10 +92,11 @@ python -m src.pipeline --sin-ens                                   # sin el cont
 ### En Google Colab
 
 ```python
-from google.colab import drive; drive.mount("/content/drive")
-%cd "/content/drive/MyDrive/Evalucion 3 y Examen/caso5-riesgo-coronario"
+!git clone -q https://github.com/LeonardoAmundarain/caso5-riesgo-coronario.git
+%cd caso5-riesgo-coronario
 !pip install -q -r requirements.txt
 !python -m src.pipeline
+!python -m pytest -q
 ```
 
 ## Qué hace el pipeline
@@ -127,8 +140,12 @@ riesgo, derivar = predecir(m, {"AGE": 60, "SEX": 1, "SYSBP": 150, "DIABP": 90, "
 - Está entrenado con población estadounidense de mediados del siglo XX. Antes de usarlo en Chile hay
   que recalibrar el intercepto con tasas de eventos locales.
 
+## Fuentes de datos
 
+- Lapp, D. (2019). *Heart Disease Dataset*. Kaggle.
+- National Heart, Lung, and Blood Institute (2021). *Framingham Heart Study longitudinal data documentation* (datos docentes). BioLINCC. Distribuido también en el paquete de R riskCommunicator (Grembi y Rogawski McQuade, 2022).
+- Ministerio de Salud de Chile y Pontificia Universidad Católica de Chile (2021). *Encuesta Nacional de Salud ENS 2016-2017*. Mendeley Data. https://doi.org/10.17632/3myh3nzcy3.1
 
 ## Equipo
 
-Leonardo Amundarain · Felipe Villalobos · Solange Valdebenito · Adolfo 
+Leonardo Amundarain · Felipe Villalobos
