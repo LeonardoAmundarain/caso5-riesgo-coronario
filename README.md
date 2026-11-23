@@ -14,7 +14,8 @@ de antihipertensivos), e indica si conviene derivar a evaluación cardiovascular
 | Prueba (845 personas) | ROC-AUC 0,76 · Recall 0,74 · Precisión 0,17 · Brier 0,076 |
 | Contraste | ENS 2016-2017 ponderada: riesgo medio estimado 6,6 % en Chile |
 
-**▶ Prototipo en línea:** https://caso5-riesgo-coronario.streamlit.app
+**▶ Prototipo en línea:** https://caso5-riesgo-coronario.streamlit.app  
+**▶ Tablero del proyecto (Trello):** https://trello.com/b/UBF3q0qM/caso-5-riesgo-coronario-evaluacion-3
 
 > Prototipo académico. No reemplaza una evaluación clínica.
 
@@ -45,6 +46,7 @@ caso5-riesgo-coronario/
 ├── assets/logo_duoc.png         # logo del encabezado
 ├── .streamlit/config.toml       # colores de la app
 ├── docs/capturas/               # pantallas del prototipo
+├── docs/monitoreo/              # Parte 4: copia del tablero Trello al 23-11 (tablero_trello.csv y .jpg)
 └── requirements.txt
 ```
 
@@ -55,6 +57,7 @@ caso5-riesgo-coronario/
 | 1. Datos | EDA de heart.csv y decisión de descartarlo; preparación de Framingham y ENS | `notebooks/Parte1a…`, `notebooks/Parte1b…` |
 | 2. Modelo | Regresión logística, random forest y XGBoost; métricas y registro de experimentos | `notebooks/Parte2…`, `resultados/experimentos.csv` |
 | 3. Entregable | Pipeline reproducible, prototipo en Streamlit, pruebas y este repositorio | `src/`, `app.py`, `tests/` |
+| 4. Monitoreo | Tablero Kanban en Trello, tareas planificadas vs. ejecutadas, reportes de estado y matriz de desviaciones | [Trello](https://trello.com/b/UBF3q0qM/caso-5-riesgo-coronario-evaluacion-3), `docs/monitoreo/` |
 
 Abrir los notebooks directamente en Colab:
 [Parte 1a](https://colab.research.google.com/github/LeonardoAmundarain/caso5-riesgo-coronario/blob/main/notebooks/Parte1a_Limpieza_heart_Caso5.ipynb) ·
@@ -148,4 +151,9 @@ riesgo, derivar = predecir(m, {"AGE": 60, "SEX": 1, "SYSBP": 150, "DIABP": 90, "
 
 ## Equipo
 
-Leonardo Amundarain · Felipe Villalobos
+| Integrante | Parte |
+|---|---|
+| Adolfo Medina | 1 · Datos |
+| Felipe Villalobos | 2 · Modelo |
+| Leonardo Amundarain | 3 · Entregable funcional |
+| Sol Valdebenito | 4 · Monitoreo y control |

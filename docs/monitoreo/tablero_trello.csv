@@ -1,0 +1,24 @@
+columna,id,tarea,responsable,fin_plan,fin_real,desvio_dias
+Backlog,,Examen: commits propios de cada integrante (D6),Todo el equipo,,,
+Backlog,,Mejora: evaluar umbral de derivación por sexo,Adolfo,,,
+Backlog,,Mejora: recalibrar el modelo con tasas de eventos chilenas,Leonardo,,,
+Por hacer,D7,Agregar a Adolfo y Sol en Equipo del README,Leonardo,26 nov,,
+Por hacer,C.1,Revisión cruzada del informe completo,Todo el equipo,25 nov,,
+Por hacer,C.2,Entregar Evaluación 3,Sol,26 nov,,
+En revisión,P4.5,Unir el informe final (borrador listo),Sol,25 nov,,
+Hecho,P4.1,Armar tablero Trello,Sol,11 nov,23 nov,+12
+Hecho,P1.1,EDA de heart.csv,Adolfo,11 nov,14 nov,+3
+Hecho,P1.2,"Limpieza, encoding, escalado, split y preparación Framingham/ENS",Adolfo,12 nov,14 nov,+2
+Hecho,P1.3,Bitácora de decisiones y capturas,Adolfo,12 nov,14 nov,+2
+Hecho,P1.4,Redactar 1.1 Parte 1,Adolfo,13 nov,14 nov,+1
+Hecho,P2.1,"Entrenar regresión logística, random forest y XGBoost",Felipe,16 nov,14 nov,-2
+Hecho,P2.2,"Evaluar accuracy, recall, F1, ROC-AUC y matriz",Felipe,17 nov,14 nov,-3
+Hecho,P2.3,Registro de experimentos por versión,Felipe,17 nov,14 nov,-3
+Hecho,P2.4,Redactar 1.1 Parte 2,Felipe,17 nov,14 nov,-3
+Hecho,P3.1,Pipeline reproducible .py y 8 tests,Leonardo,19 nov,23 nov,+4
+Hecho,P3.2,Prototipo Streamlit publicado,Leonardo,20 nov,23 nov,+3
+Hecho,P3.3,Repo con README e historial de commits,Leonardo,20 nov,23 nov,+3
+Hecho,P3.4,Redactar 1.1 Parte 3,Leonardo,20 nov,23 nov,+3
+Hecho,P4.2,Tabla planificado vs. ejecutado,Sol,24 nov,23 nov,-1
+Hecho,P4.3,Reportes de estado semanales (3),Sol,24 nov,23 nov,-1
+Hecho,P4.4,Matriz de desviaciones y acciones correctivas,Sol,25 nov,23 nov,-2
