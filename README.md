@@ -46,6 +46,7 @@ caso5-riesgo-coronario/
 ├── assets/logo_duoc.png         # logo del encabezado
 ├── .streamlit/config.toml       # colores de la app
 ├── docs/capturas/               # pantallas del prototipo
+├── docs/diagramas/              # flujo del proyecto y estructura del paquete (.mmd y .png)
 ├── docs/monitoreo/              # Parte 4: copia del tablero Trello al 23-11 (tablero_trello.csv y .jpg)
 └── requirements.txt
 ```
@@ -67,6 +68,95 @@ Abrir los notebooks directamente en Colab:
 La primera celda de cada notebook busca sola la carpeta de trabajo: usa la carpeta compartida del equipo
 en Drive si existe; si no, clona este repositorio en Colab; y en un computador usa la raíz del repositorio
 aunque el notebook se abra desde `notebooks/`.
+
+## Diagramas
+
+### Flujo del proyecto
+
+De los datos de entrada al prototipo, pasando por la auditoría de heart.csv, la cohorte de Framingham y el modelo final.
+Imagen: [`docs/diagramas/flujo_proyecto.png`](docs/diagramas/flujo_proyecto.png)
+
+```mermaid
+flowchart TD
+    classDef dato fill:#E8EEF7,stroke:#0B2545,color:#0B2545
+    classDef proc fill:#FFFFFF,stroke:#0B2545,color:#0B2545
+    classDef dec fill:#FFF4D6,stroke:#F2A900,color:#0B2545
+    classDef out fill:#0B2545,stroke:#0B2545,color:#FFFFFF
+    classDef no fill:#FDE8E8,stroke:#B42318,color:#B42318
+
+    subgraph P1["Parte 1 · Datos"]
+        H[("heart.csv<br/>1.025 filas")]:::dato --> A1["Auditoría EDA<br/>duplicados, etiqueta,<br/>población, fuga"]:::proc
+        A1 --> D1{"¿Sirve para<br/>tamizaje?"}:::dec
+        D1 -- "No" --> X["Se descarta<br/>(queda como evidencia)"]:::no
+        FT[("Framingham<br/>docente")]:::dato --> C1["Cohorte basal sin<br/>enfermedad previa +<br/>evento a 10 años"]:::proc
+        EN[("ENS 2016-2017")]:::dato --> C2["Homologar variables<br/>y factor de expansión"]:::proc
+        C1 --> CO[("framingham_cohorte.csv<br/>4.224 personas · 9 % eventos")]:::dato
+        C2 --> EH[("ens_homologada.csv")]:::dato
+    end
+
+    subgraph P2["Parte 2 · Modelo"]
+        CO --> S["Split 80/20<br/>estratificado"]:::proc
+        S --> M["3 modelos × 3 versiones<br/>validación cruzada 5 pliegues"]:::proc
+        M --> D2{"Mejor ROC-AUC,<br/>recall y calibración"}:::dec
+        D2 --> F["Regresión logística C = 10<br/>sin pesos · umbral 7,7 %"]:::proc
+    end
+
+    subgraph P3["Parte 3 · Entregable"]
+        F --> PI["python -m src.pipeline"]:::proc
+        PI --> T["pytest · 8 pruebas"]:::proc
+        PI --> R[("resultados/<br/>modelo_chd10a.pkl<br/>reporte_modelo.json")]:::out
+        EH --> PI
+        R --> APP["app.py (Streamlit)"]:::proc
+        APP --> U1["Evaluar a una persona<br/>riesgo + derivar / no derivar"]:::out
+        APP --> U2["Dashboard de resultados"]:::out
+        APP --> U3["Contraste con Chile"]:::out
+    end
+```
+
+### Estructura del paquete
+
+Cómo se relacionan las carpetas y los módulos del repositorio, y cómo se publica la app.
+Imagen: [`docs/diagramas/paquete_proyecto.png`](docs/diagramas/paquete_proyecto.png)
+
+```mermaid
+flowchart TB
+    classDef carpeta fill:#E8EEF7,stroke:#0B2545,color:#0B2545
+    classDef mod fill:#FFFFFF,stroke:#0B2545,color:#0B2545
+    classDef ext fill:#FFF4D6,stroke:#F2A900,color:#0B2545
+    classDef out fill:#0B2545,stroke:#0B2545,color:#FFFFFF
+
+    subgraph REPO["Repositorio caso5-riesgo-coronario"]
+        direction LR
+        subgraph SRC["src/ (paquete Python)"]
+            CFG["config.py<br/>variables, rutas, semilla,<br/>rangos válidos"]:::mod
+            PIP["pipeline.py<br/>cargar · dividir · construir_modelo ·<br/>elegir_umbral · evaluar · contraste_ens ·<br/>validar_persona · predecir · ejecutar"]:::mod
+            CFG --> PIP
+        end
+        DAT["datos/<br/>heart.csv · framingham_teaching.csv ·<br/>framingham_cohorte.csv · ens_homologada.csv"]:::carpeta
+        NB["notebooks/<br/>Parte1a · Parte1b · Parte2"]:::carpeta
+        RES["resultados/<br/>modelo_chd10a.pkl · reporte_modelo.json ·<br/>predicciones_prueba.csv · ens_riesgo.csv ·<br/>experimentos.csv"]:::carpeta
+        TST["tests/test_pipeline.py<br/>8 pruebas"]:::mod
+        APP["app.py<br/>prototipo Streamlit"]:::mod
+        AST["assets/ · .streamlit/<br/>logo y colores"]:::carpeta
+        DOC["docs/<br/>capturas · diagramas · monitoreo"]:::carpeta
+        REQ["requirements.txt · README.md"]:::carpeta
+
+        NB -- "genera" --> DAT
+        DAT -- "lee" --> PIP
+        PIP -- "escribe" --> RES
+        TST -- "prueba" --> PIP
+        APP -- "importa" --> PIP
+        APP -- "importa" --> CFG
+        APP -- "lee" --> RES
+        AST --> APP
+    end
+
+    subgraph DEP["Publicación"]
+        direction LR
+        GH["GitHub<br/>(cada push)"]:::ext --> SC["Streamlit Community Cloud<br/>instala requirements.txt"]:::ext --> WEB["caso5-riesgo-coronario.streamlit.app"]:::out
+    end
+    REPO --> DEP
+```
 
 ## Cómo ejecutarlo
 

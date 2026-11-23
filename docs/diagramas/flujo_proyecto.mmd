@@ -1,0 +1,34 @@
+flowchart TD
+    classDef dato fill:#E8EEF7,stroke:#0B2545,color:#0B2545
+    classDef proc fill:#FFFFFF,stroke:#0B2545,color:#0B2545
+    classDef dec fill:#FFF4D6,stroke:#F2A900,color:#0B2545
+    classDef out fill:#0B2545,stroke:#0B2545,color:#FFFFFF
+    classDef no fill:#FDE8E8,stroke:#B42318,color:#B42318
+
+    subgraph P1["Parte 1 · Datos"]
+        H[("heart.csv<br/>1.025 filas")]:::dato --> A1["Auditoría EDA<br/>duplicados, etiqueta,<br/>población, fuga"]:::proc
+        A1 --> D1{"¿Sirve para<br/>tamizaje?"}:::dec
+        D1 -- "No" --> X["Se descarta<br/>(queda como evidencia)"]:::no
+        FT[("Framingham<br/>docente")]:::dato --> C1["Cohorte basal sin<br/>enfermedad previa +<br/>evento a 10 años"]:::proc
+        EN[("ENS 2016-2017")]:::dato --> C2["Homologar variables<br/>y factor de expansión"]:::proc
+        C1 --> CO[("framingham_cohorte.csv<br/>4.224 personas · 9 % eventos")]:::dato
+        C2 --> EH[("ens_homologada.csv")]:::dato
+    end
+
+    subgraph P2["Parte 2 · Modelo"]
+        CO --> S["Split 80/20<br/>estratificado"]:::proc
+        S --> M["3 modelos × 3 versiones<br/>validación cruzada 5 pliegues"]:::proc
+        M --> D2{"Mejor ROC-AUC,<br/>recall y calibración"}:::dec
+        D2 --> F["Regresión logística C = 10<br/>sin pesos · umbral 7,7 %"]:::proc
+    end
+
+    subgraph P3["Parte 3 · Entregable"]
+        F --> PI["python -m src.pipeline"]:::proc
+        PI --> T["pytest · 8 pruebas"]:::proc
+        PI --> R[("resultados/<br/>modelo_chd10a.pkl<br/>reporte_modelo.json")]:::out
+        EH --> PI
+        R --> APP["app.py (Streamlit)"]:::proc
+        APP --> U1["Evaluar a una persona<br/>riesgo + derivar / no derivar"]:::out
+        APP --> U2["Dashboard de resultados"]:::out
+        APP --> U3["Contraste con Chile"]:::out
+    end
